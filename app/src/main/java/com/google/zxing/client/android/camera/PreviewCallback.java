@@ -29,28 +29,32 @@ final class PreviewCallback implements Camera.PreviewCallback {
 
     private final CameraConfigurationManager configManager;
     private Handler previewHandler;
-    private int previewMessage;
+    private int priviewWhat;
 
     PreviewCallback(CameraConfigurationManager configManager) {
         this.configManager = configManager;
     }
 
-    void setHandler(Handler previewHandler, int previewMessage) {
+    void setHandler(Handler previewHandler, int previewWhat) {
         this.previewHandler = previewHandler;
-        this.previewMessage = previewMessage;
+        this.priviewWhat = previewWhat;
     }
 
     /*----------------系统给回来的东西-----------------*/
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
+
         Point cameraResolution = configManager.getCameraResolution();
-        Handler thePreviewHandler = previewHandler;
+
+        Handler thePreviewHandler = previewHandler;//消息发送
+
         if (cameraResolution != null && thePreviewHandler != null) {
-            Message message = thePreviewHandler.obtainMessage(previewMessage, cameraResolution.x,
+
+            Message message = thePreviewHandler.obtainMessage(priviewWhat, cameraResolution.x,
                     cameraResolution.y, data);
             message.sendToTarget();
             previewHandler = null;
-            Log.d(TAG, "系统返回东西啦");
+
         } else {
             Log.d(TAG, "Got preview callback, but no handler or resolution available");
         }

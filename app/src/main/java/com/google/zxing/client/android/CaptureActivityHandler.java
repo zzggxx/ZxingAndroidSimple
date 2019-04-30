@@ -67,6 +67,7 @@ public final class CaptureActivityHandler extends Handler {
                            CameraManager cameraManager) {
 
         this.activity = activity;
+
 //        处理解码任务的
         decodeThread = new DecodeThread(
                 activity, decodeFormats, baseHints, characterSet,

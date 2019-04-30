@@ -265,6 +265,29 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
     }
 
+    /*-------------------------surfaceHolder.addCallback(this)----------------------*/
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (holder == null) {
+            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
+        }
+        if (!hasSurface) {
+            hasSurface = true;
+            initCamera(holder);
+        }
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        hasSurface = false;
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // do nothing
+    }
+    /*-----------------------------------------------------------------------------------------*/
+
     private int getCurrentOrientation() {
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -412,29 +435,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             savedResultToShow = null;
         }
     }
-
-    /*-------------------------surfaceHolder.addCallback(this)----------------------*/
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (holder == null) {
-            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
-        }
-        if (!hasSurface) {
-            hasSurface = true;
-            initCamera(holder);
-        }
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        hasSurface = false;
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        // do nothing
-    }
-    /*-----------------------------------------------------------------------------------------*/
 
     /**
      * A valid barcode has been found, so give an indication of success and show the results.
@@ -726,7 +726,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         try {
             cameraManager.openDriver(surfaceHolder);
             // Creating the handler starts the preview, which can also throw a RuntimeException.
-            // 预览界面
+            // 预览界面,因为是在构造方法中回调的,decodeFormats, decodeHints, characterSet自启动均为null
             if (handler == null) {
                 handler = new CaptureActivityHandler(this, decodeFormats, decodeHints, characterSet, cameraManager);
             }

@@ -137,6 +137,7 @@ public final class CameraManager {
         }
         cameraObject.setPreviewDisplay(holder);//给相机设置界面.
 
+
     }
 
     public synchronized boolean isOpen() {
@@ -213,12 +214,12 @@ public final class CameraManager {
      * 一个预览框架将返回给提供的处理程序。数据将以字节[]的形式到达message.obj字段，宽度和高度分别编码为message.arg1和message.arg2
      *
      * @param handler The handler to send the message to.
-     * @param message The what field of the message to be sent.
+     * @param what The what field of the message to be sent.
      */
-    public synchronized void requestPreviewFrame(Handler handler, int message) {
+    public synchronized void requestPreviewFrame(Handler handler, int what) {
         OpenCamera theCamera = camera;
         if (theCamera != null && previewing) {
-            previewCallback.setHandler(handler, message);
+            previewCallback.setHandler(handler, what);
             theCamera.getCamera().setOneShotPreviewCallback(previewCallback);//设置回调拿到back值.
         }
     }
