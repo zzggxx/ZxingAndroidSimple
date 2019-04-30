@@ -51,6 +51,9 @@ public final class CameraManager {
 
     private final Context context;
     private final CameraConfigurationManager configManager;
+    public OpenCamera getCamera() {
+        return camera;
+    }
     private OpenCamera camera;
     private AutoFocusManager autoFocusManager;
     private Rect framingRect;
@@ -132,7 +135,7 @@ public final class CameraManager {
                 }
             }
         }
-        cameraObject.setPreviewDisplay(holder);
+        cameraObject.setPreviewDisplay(holder);//给相机设置界面.
 
     }
 
@@ -207,6 +210,8 @@ public final class CameraManager {
      * in the message.obj field, with width and height encoded as message.arg1 and message.arg2,
      * respectively.
      *
+     * 一个预览框架将返回给提供的处理程序。数据将以字节[]的形式到达message.obj字段，宽度和高度分别编码为message.arg1和message.arg2
+     *
      * @param handler The handler to send the message to.
      * @param message The what field of the message to be sent.
      */
@@ -214,7 +219,7 @@ public final class CameraManager {
         OpenCamera theCamera = camera;
         if (theCamera != null && previewing) {
             previewCallback.setHandler(handler, message);
-            theCamera.getCamera().setOneShotPreviewCallback(previewCallback);
+            theCamera.getCamera().setOneShotPreviewCallback(previewCallback);//设置回调拿到back值.
         }
     }
 
@@ -222,6 +227,8 @@ public final class CameraManager {
      * Calculates the framing rect which the UI should draw to show the user where to place the
      * barcode. This target helps with alignment as well as forces the user to hold the device
      * far enough away to ensure the image will be in focus.
+     *
+     * 计算UI应该绘制的帧重划，以显示用户放置条形码的位置。此目标有助于对齐，并强制用户将设备保持足够远，以确保图像将在焦点。
      *
      * @return The rectangle to draw on screen in window coordinates.
      */
@@ -261,6 +268,8 @@ public final class CameraManager {
     /**
      * Like {@link #getFramingRect} but coordinates are in terms of the preview frame,
      * not UI / screen.
+     *
+     * 和画矩形类似但是不绘制在界面上
      *
      * @return {@link Rect} expressing barcode scan area in terms of the preview size
      */
@@ -329,6 +338,8 @@ public final class CameraManager {
     /**
      * A factory method to build the appropriate LuminanceSource object based on the format
      * of the preview buffers, as described by Camera.Parameters.
+     *
+     * 根据预览缓冲区的格式构建适当的亮度源对象的工厂方法，如Camera.Parameters所述。
      *
      * @param data   A preview frame.
      * @param width  The width of the image.

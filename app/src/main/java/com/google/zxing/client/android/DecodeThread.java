@@ -16,15 +16,16 @@
 
 package com.google.zxing.client.android;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.ResultPointCallback;
-
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.ResultPointCallback;
+import com.google.zxing.client.android.camera.open.OpenCamera;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -45,6 +46,7 @@ final class DecodeThread extends Thread {
     public static final String BARCODE_SCALED_FACTOR = "barcode_scaled_factor";
 
     private final CaptureActivity activity;
+    private OpenCamera mCamera;
     private final Map<DecodeHintType, Object> hints;
     private Handler handler;
     private final CountDownLatch handlerInitLatch;
@@ -53,9 +55,10 @@ final class DecodeThread extends Thread {
                  Collection<BarcodeFormat> decodeFormats,
                  Map<DecodeHintType, ?> baseHints,
                  String characterSet,
-                 ResultPointCallback resultPointCallback) {
+                 ResultPointCallback resultPointCallback, OpenCamera camera) {
 
         this.activity = activity;
+        mCamera = camera;
         handlerInitLatch = new CountDownLatch(1);//同步工具类,管理线程先后执行的
 
         hints = new EnumMap<>(DecodeHintType.class);
@@ -108,7 +111,7 @@ final class DecodeThread extends Thread {
     @Override
     public void run() {
         Looper.prepare();
-        handler = new DecodeHandler(activity, hints);
+        handler = new DecodeHandler(activity, hints,mCamera);
         handlerInitLatch.countDown();
         Looper.loop();
     }
