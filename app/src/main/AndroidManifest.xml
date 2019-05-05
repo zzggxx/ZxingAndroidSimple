@@ -57,8 +57,15 @@
             android:stateNotNeeded="true"
             android:theme="@style/CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
-            <!-- 横屏旋转 -->
+
+            <!--///////////////////////////////////////////////////////////////////////////////////////////////////-->
+            <!-- sensorLandscape:横向显示，但是基于设备传感器，既可以是按正常方向显示，也可以反向显示，在API Level 9中被引入。 -->
             <!--android:screenOrientation="sensorLandscape"-->
+
+            <!-- 若是不设置方向 -->
+            <!-- 测试发现:若是开着自动旋转,则恒拿恒着,竖拿竖着(当然是可反转展示的),若是不开就只有竖着 -->
+            <!--///////////////////////////////////////////////////////////////////////////////////////////////////-->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

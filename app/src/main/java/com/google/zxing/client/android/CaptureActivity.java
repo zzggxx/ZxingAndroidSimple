@@ -168,8 +168,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         lastResult = null;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        方向设置
-        if (prefs.getBoolean(PreferencesActivity.KEY_DISABLE_AUTO_ORIENTATION, true)) {
+//        方向设置(锁定了方向)
+        if (prefs.getBoolean(PreferencesActivity.KEY_DISABLE_AUTO_ORIENTATION, true)) {//默认是true
+            //设置之后方向不随外部变化(手机自动旋转)而变化
             setRequestedOrientation(getCurrentOrientation());
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -297,12 +298,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         // manifest设置横屏的时候
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            switch (rotation) {
+            switch (rotation) {   //只能是1和3,没有其他的.
                 case Surface.ROTATION_0:
                 case Surface.ROTATION_90:
-                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;//强制横屏
                 default:
                     return ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+
             }
         } else {
             switch (rotation) {

@@ -51,9 +51,11 @@ public final class CameraManager {
 
     private final Context context;
     private final CameraConfigurationManager configManager;
+
     public OpenCamera getCamera() {
         return camera;
     }
+
     private OpenCamera camera;
     private AutoFocusManager autoFocusManager;
     private Rect framingRect;
@@ -96,10 +98,11 @@ public final class CameraManager {
             camera = theCamera;
         }
 
+        /*---------------------------------扫描框--------------------------------------*/
         if (!initialized) {
 //            设置扫描二维码的区域位置和大小
             initialized = true;
-            configManager.initFromCameraParameters(theCamera);//主要是方向方面的控制初始化
+            configManager.initFromCameraParameters(theCamera);
 
 //            扫描框的大小,也可以三方指定.
             if (requestedFramingRectWidth > 0 && requestedFramingRectHeight > 0) {
@@ -108,6 +111,7 @@ public final class CameraManager {
                 requestedFramingRectHeight = 0;
             }
         }
+        /*-----------------------------------------------------------------------------*/
 
         Camera cameraObject = theCamera.getCamera();
         Camera.Parameters parameters = cameraObject.getParameters();
@@ -116,6 +120,7 @@ public final class CameraManager {
 
         try {
 
+//            参数设置,像什么曝光度,反色,旋转等等
             configManager.setDesiredCameraParameters(theCamera, false);
 
         } catch (RuntimeException re) {
@@ -215,11 +220,11 @@ public final class CameraManager {
      * A single preview frame will be returned to the handler supplied. The data will arrive as byte[]
      * in the message.obj field, with width and height encoded as message.arg1 and message.arg2,
      * respectively.
-     *
+     * <p>
      * 一个预览框架将返回给提供的处理程序。数据将以字节[]的形式到达message.obj字段，宽度和高度分别编码为message.arg1和message.arg2
      *
      * @param handler The handler to send the message to.
-     * @param what The what field of the message to be sent.
+     * @param what    The what field of the message to be sent.
      */
     public synchronized void requestPreviewFrame(Handler handler, int what) {
         OpenCamera theCamera = camera;
@@ -233,7 +238,7 @@ public final class CameraManager {
      * Calculates the framing rect which the UI should draw to show the user where to place the
      * barcode. This target helps with alignment as well as forces the user to hold the device
      * far enough away to ensure the image will be in focus.
-     *
+     * <p>
      * 计算UI应该绘制的帧重划，以显示用户放置条形码的位置。此目标有助于对齐，并强制用户将设备保持足够远，以确保图像将在焦点。
      *
      * @return The rectangle to draw on screen in window coordinates.
@@ -274,7 +279,7 @@ public final class CameraManager {
     /**
      * Like {@link #getFramingRect} but coordinates are in terms of the preview frame,
      * not UI / screen.
-     *
+     * <p>
      * 和画矩形类似但是不绘制在界面上
      *
      * @return {@link Rect} expressing barcode scan area in terms of the preview size
@@ -344,7 +349,7 @@ public final class CameraManager {
     /**
      * A factory method to build the appropriate LuminanceSource object based on the format
      * of the preview buffers, as described by Camera.Parameters.
-     *
+     * <p>
      * 根据预览缓冲区的格式构建适当的亮度源对象的工厂方法，如Camera.Parameters所述。
      *
      * @param data   A preview frame.
