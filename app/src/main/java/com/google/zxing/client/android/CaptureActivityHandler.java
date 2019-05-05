@@ -68,7 +68,7 @@ public final class CaptureActivityHandler extends Handler {
 
         this.activity = activity;
 
-//        处理解码任务的
+//        处理解码任务的,单起线程去扫描二维码
         decodeThread = new DecodeThread(
                 activity, decodeFormats, baseHints, characterSet,
                 new ViewfinderResultPointCallback(activity.getViewfinderView()),cameraManager.getCamera());
@@ -77,8 +77,13 @@ public final class CaptureActivityHandler extends Handler {
 
         // Start ourselves capturing previews and decoding.开启拍摄预览和解码
         this.cameraManager = cameraManager;
-        cameraManager.startPreview();//开启相机预览
-        restartPreviewAndDecode();//重开始预览和解码
+
+        //开启相机预览
+        // 在startPreview方法执行之后，SurfaceView才真的开始显示照相机内容
+        cameraManager.startPreview();
+
+        //重开始预览和解码,重要方法.
+        restartPreviewAndDecode();
     }
 
     @Override
@@ -174,6 +179,8 @@ public final class CaptureActivityHandler extends Handler {
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
             cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+
+            //重新绘制蓝色边缘矩形、扫描线等
             activity.drawViewfinder();
         }
     }

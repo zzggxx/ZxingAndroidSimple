@@ -102,6 +102,7 @@ final class DecodeHandler extends Handler {
         rawImage = baos.toByteArray();
         Bitmap bitmap1 = arrayByteConvertoBitmap(rawImage, null);
         if (bitmap1 != null) {
+//            保存扫描得来的图片.
 //            saveBitmap(bitmap1);
         } else {
             Log.i(TAG, "decode: bitmap is null");
@@ -122,7 +123,7 @@ final class DecodeHandler extends Handler {
             }
         }
 
-        Handler handler = activity.getHandler();//又发送到activity中
+        Handler handler = activity.getHandler();//又发送到CaptureActivity的CaptureActivityHandler中
         if (rawResult != null) {
             // Don't log the barcode contents for security.
             long end = System.currentTimeMillis();

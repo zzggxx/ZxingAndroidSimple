@@ -136,9 +136,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         setContentView(R.layout.capture);
 
         hasSurface = false;
-        inactivityTimer = new InactivityTimer(this);//一段时间不活动杀死当前界面
-        beepManager = new BeepManager(this);//蜂鸣和震动
-        ambientLightManager = new AmbientLightManager(this);//光线管理
+        inactivityTimer = new InactivityTimer(this);//当使用的是电池供电情况下一段时间不活动杀死当前界面
+        beepManager = new BeepManager(this);//主要用于扫描成功后的蜂鸣和震动
+        ambientLightManager = new AmbientLightManager(this);//保持屏幕唤醒状态
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);//读取的设置选项
     }
@@ -155,7 +155,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         // want to open the camera driver and measure the screen size if we're going to show the help on
         // first launch. That led to bugs where the scanning rectangle was the wrong size and partially
         // off screen.
-        // 尺寸需要在这里做不能放在oncreate中.
+        // 尺寸需要在这里做不能放在oncreate中,会得到一堆的0.
         cameraManager = new CameraManager(getApplication());
 
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);//扫描框和扫描线
@@ -289,7 +289,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     /*-----------------------------------------------------------------------------------------*/
 
     private int getCurrentOrientation() {
+        // 获取屏幕的旋转方向(指定了manifest文件就是那里的设置方向),注意看getRotation()的释义
+        // 返回值是0123相对应的0,90,180,270.(eg按照自然旋转,返回值90或者270取决于旋转的方向)
+        //  屏幕的绘制方向和设备的方向恰好是相反的.(eg设备逆时针旋转90度,则画面渲染是顺时针90度,当然返回的也是90°)
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        Log.i(TAG, "getCurrentOrientation: " + rotation);
+
+        // manifest设置横屏的时候
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             switch (rotation) {
                 case Surface.ROTATION_0:
@@ -451,8 +457,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         boolean fromLiveScan = barcode != null;
         if (fromLiveScan) {
             historyManager.addHistoryItem(rawResult, resultHandler);
+
             // Then not from history, so beep/vibrate and we have an image to draw on
+            //播放扫描成功的声音
             beepManager.playBeepSoundAndVibrate();
+
+            //将扫描结果返回到上一个页面
             drawResultPoints(barcode, scaleFactor, rawResult);
         }
 

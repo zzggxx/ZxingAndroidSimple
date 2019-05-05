@@ -88,6 +88,7 @@ public final class CameraManager {
 //    开启相机
         OpenCamera theCamera = camera;
         if (theCamera == null) {
+//            使用的是系统的api打开的相机
             theCamera = OpenCameraInterface.open(requestedCameraId);
             if (theCamera == null) {
                 throw new IOException("Camera.open() failed to return object from driver");
@@ -96,6 +97,7 @@ public final class CameraManager {
         }
 
         if (!initialized) {
+//            设置扫描二维码的区域位置和大小
             initialized = true;
             configManager.initFromCameraParameters(theCamera);//主要是方向方面的控制初始化
 
@@ -135,7 +137,9 @@ public final class CameraManager {
                 }
             }
         }
-        cameraObject.setPreviewDisplay(holder);//给相机设置界面.
+
+        // 将相机获取的画面展示在容器中.
+        cameraObject.setPreviewDisplay(holder);
 
 
     }
@@ -200,6 +204,7 @@ public final class CameraManager {
             }
             configManager.setTorch(theCamera.getCamera(), newSetting);
             if (wasAutoFocusManager) {
+//                实现自动对焦
                 autoFocusManager = new AutoFocusManager(context, theCamera.getCamera());
                 autoFocusManager.start();
             }
