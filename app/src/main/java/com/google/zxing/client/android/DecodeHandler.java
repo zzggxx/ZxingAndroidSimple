@@ -65,10 +65,10 @@ final class DecodeHandler extends Handler {
         if (message == null || !running) {
             return;
         }
-        Log.i(TAG, "handleMessage: 发送消息处");
+        Log.i(TAG, "handleMessage: 发送消息处");//由 onPreviewFrame 回调回来的.
         switch (message.what) {
             case R.id.decode:
-                decode((byte[]) message.obj, message.arg1, message.arg2);
+                decode((byte[]) message.obj, message.arg1, message.arg2);//后边参数是照片的宽高,实测是屏幕的宽高
                 break;
             case R.id.quit:
                 running = false;
@@ -91,8 +91,9 @@ final class DecodeHandler extends Handler {
 
     private void decode(byte[] data, int width, int height) {
 
+        /*--------------------------------------------------------------------*/
+//        拿到每一帧的图片进行保存的逻辑
         byte[] rawImage;
-
         Camera.Size previewSize = mCamera.getCamera().getParameters().getPreviewSize();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -107,8 +108,10 @@ final class DecodeHandler extends Handler {
         } else {
             Log.i(TAG, "decode: bitmap is null");
         }
+        /*--------------------------------------------------------------------*/
 
 
+        /*-----------------------猜测:底层算法验证是否包含了二维码的rawResult-----------------------------------*/
         long start = System.currentTimeMillis();
         Result rawResult = null;
         PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(data, width, height);
@@ -123,12 +126,14 @@ final class DecodeHandler extends Handler {
             }
         }
 
+        /*--------------直接消息发送-------------------*/
         Handler handler = activity.getHandler();//又发送到CaptureActivity的CaptureActivityHandler中
         if (rawResult != null) {
             // Don't log the barcode contents for security.
             long end = System.currentTimeMillis();
             Log.d(TAG, "Found barcode in " + (end - start) + " ms");
             if (handler != null) {
+
                 Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);
                 Bundle bundle = new Bundle();
                 bundleThumbnail(source, bundle);
@@ -143,13 +148,18 @@ final class DecodeHandler extends Handler {
         }
     }
 
+    /*--------------在bundle中设置图片缩率图的二维码信息------------------------*/
     private static void bundleThumbnail(PlanarYUVLuminanceSource source, Bundle bundle) {
+
         int[] pixels = source.renderThumbnail();
+
         int width = source.getThumbnailWidth();
         int height = source.getThumbnailHeight();
+
         Bitmap bitmap = Bitmap.createBitmap(pixels, 0, width, width, height, Bitmap.Config.ARGB_8888);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+
         bundle.putByteArray(DecodeThread.BARCODE_BITMAP, out.toByteArray());
         bundle.putFloat(DecodeThread.BARCODE_SCALED_FACTOR, (float) width / source.getWidth());
     }

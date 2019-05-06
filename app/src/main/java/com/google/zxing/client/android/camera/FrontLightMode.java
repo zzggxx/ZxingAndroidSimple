@@ -26,7 +26,7 @@ public enum FrontLightMode {
 
   /** Always on. */
   ON,
-  /** On only when ambient light is low. */
+  /** On only when ambient light is low. 周围光线偏暗的时候*/
   AUTO,
   /** Always off. */
   OFF;

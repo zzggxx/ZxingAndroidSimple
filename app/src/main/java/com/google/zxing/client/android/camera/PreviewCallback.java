@@ -44,9 +44,11 @@ final class PreviewCallback implements Camera.PreviewCallback {
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
 
+        Log.i(TAG, "onPreviewFrame: 系统回调回来的帧数据");
+
         Point cameraResolution = configManager.getCameraResolution();
 
-        Handler thePreviewHandler = previewHandler;//消息发送
+        Handler thePreviewHandler = previewHandler;//消息发送 ,实际发送到 DecodeHandler中handleMessage进行了处理.
 
         if (cameraResolution != null && thePreviewHandler != null) {
 

@@ -446,18 +446,25 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     /**
      * A valid barcode has been found, so give an indication of success and show the results.
+     * <p>
+     * 已找到有效的条形码，因此请给出成功的指示并显示结果.
      *
      * @param rawResult   The contents of the barcode.
      * @param scaleFactor amount by which thumbnail was scaled
      * @param barcode     A greyscale bitmap of the camera data which was decoded.
      */
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
+
         inactivityTimer.onActivity();
         lastResult = rawResult;
+
         ResultHandler resultHandler = ResultHandlerFactory.makeResultHandler(this, rawResult);
 
         boolean fromLiveScan = barcode != null;
+
         if (fromLiveScan) {
+
+            //添加历史扫描
             historyManager.addHistoryItem(rawResult, resultHandler);
 
             // Then not from history, so beep/vibrate and we have an image to draw on
@@ -498,13 +505,17 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     /**
      * Superimpose a line for 1D or dots for 2D to highlight the key features of the barcode.
+     * <p>
+     * 叠加一维线或二维点线，突出条形码的关键特征。
      *
      * @param barcode     A bitmap of the captured image.
      * @param scaleFactor amount by which thumbnail was scaled
      * @param rawResult   The decoded results which contains the points to draw.
      */
     private void drawResultPoints(Bitmap barcode, float scaleFactor, Result rawResult) {
+
         ResultPoint[] points = rawResult.getResultPoints();
+
         if (points != null && points.length > 0) {
             Canvas canvas = new Canvas(barcode);
             Paint paint = new Paint();

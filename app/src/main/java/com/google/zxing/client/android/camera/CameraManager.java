@@ -111,8 +111,8 @@ public final class CameraManager {
                 requestedFramingRectHeight = 0;
             }
         }
-        /*-----------------------------------------------------------------------------*/
 
+        /*----------------------------参数设置-------------------------------------------*/
         Camera cameraObject = theCamera.getCamera();
         Camera.Parameters parameters = cameraObject.getParameters();
         // Save these, temporarily
@@ -120,7 +120,7 @@ public final class CameraManager {
 
         try {
 
-//            参数设置,像什么曝光度,反色,旋转等等
+//            参数设置,像什么曝光度,反色,旋转.预览角度等等.可能会运行时错误,那么就不设置这些了.
             configManager.setDesiredCameraParameters(theCamera, false);
 
         } catch (RuntimeException re) {
@@ -131,8 +131,11 @@ public final class CameraManager {
 
             // Reset:
             if (parametersFlattened != null) {
+
                 parameters = cameraObject.getParameters();
+                //将刚才提出来的参数重新设置.
                 parameters.unflatten(parametersFlattened);
+
                 try {
                     cameraObject.setParameters(parameters);
                     configManager.setDesiredCameraParameters(theCamera, true);
@@ -143,7 +146,7 @@ public final class CameraManager {
             }
         }
 
-        // 将相机获取的画面展示在容器中.
+        // 将相机获取的画面展示在容器中.(设置了holder)
         cameraObject.setPreviewDisplay(holder);
 
 
@@ -168,6 +171,8 @@ public final class CameraManager {
     }
 
     /**
+     * 开始真正的绘制画面预览
+     * <p>
      * Asks the camera hardware to begin drawing preview frames to the screen.
      */
     public synchronized void startPreview() {
@@ -175,6 +180,7 @@ public final class CameraManager {
         if (theCamera != null && !previewing) {
             theCamera.getCamera().startPreview();
             previewing = true;
+//            自动对焦
             autoFocusManager = new AutoFocusManager(context, theCamera.getCamera());
         }
     }
@@ -227,10 +233,16 @@ public final class CameraManager {
      * @param what    The what field of the message to be sent.
      */
     public synchronized void requestPreviewFrame(Handler handler, int what) {
+
         OpenCamera theCamera = camera;
-        if (theCamera != null && previewing) {
+
+        if (theCamera != null && previewing) {  //在此之前已经开始了对焦写值:previewing = true;
+
+            //给其是指处理消息的handler,回调回来的帧画面给相应的关系人处理
             previewCallback.setHandler(handler, what);
-            theCamera.getCamera().setOneShotPreviewCallback(previewCallback);//设置回调拿到back值.
+
+            //给相机设置一个previewCallback,预览回调,不然你怎么拿的出来相机的回调啊.
+            theCamera.getCamera().setOneShotPreviewCallback(previewCallback);
         }
     }
 

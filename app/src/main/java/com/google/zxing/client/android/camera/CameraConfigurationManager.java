@@ -64,7 +64,7 @@ final class CameraConfigurationManager {
         Display display = manager.getDefaultDisplay();
 
         int displayRotation = display.getRotation();
-        int cwRotationFromNaturalToDisplay;
+        int cwRotationFromNaturalToDisplay; //需要展示的方向
         switch (displayRotation) {
             case Surface.ROTATION_0:
                 cwRotationFromNaturalToDisplay = 0;
@@ -111,9 +111,11 @@ final class CameraConfigurationManager {
     }
      */
 
+//    计算处设置相机的矫正角度
         cwRotationFromDisplayToCamera =
                 (360 + cwRotationFromNaturalToCamera - cwRotationFromNaturalToDisplay) % 360;
         Log.i(TAG, "Final display orientation: " + cwRotationFromDisplayToCamera);
+
         if (camera.getFacing() == CameraFacing.FRONT) {
             Log.i(TAG, "Compensating rotation for front camera");
             cwNeededRotation = (360 - cwRotationFromDisplayToCamera) % 360;
@@ -122,12 +124,17 @@ final class CameraConfigurationManager {
         }
         Log.i(TAG, "Clockwise rotation from display to camera: " + cwNeededRotation);
 
+
         Point theScreenResolution = new Point();
         display.getSize(theScreenResolution);
+
         screenResolution = theScreenResolution;
         Log.i(TAG, "Screen resolution in current orientation: " + screenResolution);
+
         cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);
         Log.i(TAG, "Camera resolution: " + cameraResolution);
+
+        /*-------最佳的预览尺寸----------*/
         bestPreviewSize = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);
         Log.i(TAG, "Best available preview size: " + bestPreviewSize);
 
@@ -167,7 +174,8 @@ final class CameraConfigurationManager {
 //        拿到apk的包名的sp文件
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        initializeTorch(parameters, prefs, safeMode);//设置亮度和曝光度
+//        设置亮度和曝光度
+        initializeTorch(parameters, prefs, safeMode);
 
 //        设置是否自动对焦
         CameraConfigurationUtils.setFocus(
@@ -198,10 +206,13 @@ final class CameraConfigurationManager {
 
         }
 
+        //设置预览的最佳尺寸,应该是在预览之前,若是已经开始预览则需要停止预览再改变尺寸.
         parameters.setPreviewSize(bestPreviewSize.x, bestPreviewSize.y);
 
+        //上边其实都是改变了parameters,这里重新设置.
         theCamera.setParameters(parameters);
 
+        //设置相机的预览角度.
         theCamera.setDisplayOrientation(cwRotationFromDisplayToCamera);
 
         Camera.Parameters afterParameters = theCamera.getParameters();
