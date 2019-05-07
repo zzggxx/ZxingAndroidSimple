@@ -89,11 +89,14 @@ public final class CaptureActivityHandler extends Handler {
 
     @Override
     public void handleMessage(Message message) {
+
         switch (message.what) {
+
             case R.id.restart_preview:
                 Log.i(TAG, "handleMessage: restart_preview");
                 restartPreviewAndDecode();
                 break;
+
             case R.id.decode_succeeded:
                 Log.i(TAG, "handleMessage: decode_succeeded");
 

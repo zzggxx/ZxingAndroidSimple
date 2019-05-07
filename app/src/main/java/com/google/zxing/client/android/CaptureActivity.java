@@ -488,16 +488,26 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 }
                 break;
             case NONE:
+
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
                 if (fromLiveScan && prefs.getBoolean(PreferencesActivity.KEY_BULK_MODE, false)) {
+
+//                    连续扫描
                     Toast.makeText(getApplicationContext(),
                             getResources().getString(R.string.msg_bulk_mode_scanned) + " (" + rawResult.getText() + ')',
                             Toast.LENGTH_SHORT).show();
+
+//                    复制到剪切板
                     maybeSetClipboard(resultHandler);
+
                     // Wait a moment or else it will scan the same barcode continuously about 3 times
-                    restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
+                    restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);//延迟一秒钟重新的扫描
+
                 } else {
+
                     handleDecodeInternally(rawResult, resultHandler, barcode);
+
                 }
                 break;
         }
@@ -557,11 +567,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+//        自动打开网页情况下
         if (resultHandler.getDefaultButtonID() != null && prefs.getBoolean(PreferencesActivity.KEY_AUTO_OPEN_WEB, false)) {
             resultHandler.handleButtonPress(resultHandler.getDefaultButtonID());
             return;
         }
 
+//        其他就是展示
         statusView.setVisibility(View.GONE);
         viewfinderView.setVisibility(View.GONE);
         resultView.setVisibility(View.VISIBLE);

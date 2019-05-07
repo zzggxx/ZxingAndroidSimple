@@ -41,10 +41,14 @@ final class PreviewCallback implements Camera.PreviewCallback {
     }
 
     /*----------------系统给回来的东西-----------------*/
+    long lastPreviewbackTime;
+
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
 
-        Log.i(TAG, "onPreviewFrame: 系统回调回来的帧数据");
+        Log.i(TAG, "onPreviewFrame: 系统回调回来的帧数据" +
+                (System.currentTimeMillis() - lastPreviewbackTime));
+        lastPreviewbackTime = System.currentTimeMillis();
 
         Point cameraResolution = configManager.getCameraResolution();
 
