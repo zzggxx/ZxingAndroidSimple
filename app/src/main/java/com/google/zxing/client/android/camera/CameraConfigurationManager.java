@@ -27,6 +27,7 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.google.zxing.client.android.PreferencesActivity;
+import com.google.zxing.client.android.Utils.CameraConfigurationUtils;
 import com.google.zxing.client.android.camera.open.CameraFacing;
 import com.google.zxing.client.android.camera.open.OpenCamera;
 
@@ -44,8 +45,8 @@ final class CameraConfigurationManager {
     private final Context context;
     private int cwNeededRotation;//从显示到相机顺时针旋转的角度
     private int cwRotationFromDisplayToCamera;//最终展示的角度
-    private Point screenResolution;//屏幕方向
-    private Point cameraResolution;//摄像机方向
+    private Point screenResolution;//屏幕分辨率
+    private Point cameraResolution;//照相机分辨率
     private Point bestPreviewSize;//最合适的预览尺寸
     private Point previewSizeOnScreen;//屏幕上的预览大小
 
@@ -54,6 +55,8 @@ final class CameraConfigurationManager {
     }
 
     /**
+     * 相机的参数设置,只需一次即可
+     * <p>
      * Reads, one time, values from the camera that are needed by the app.
      */
     void initFromCameraParameters(OpenCamera camera) {
@@ -97,6 +100,7 @@ final class CameraConfigurationManager {
             Log.i(TAG, "Front camera overriden to: " + cwRotationFromNaturalToCamera);
         }
 
+
     /*
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
     String overrideRotationString;
@@ -111,11 +115,12 @@ final class CameraConfigurationManager {
     }
      */
 
-//    计算处设置相机的矫正角度
+//    计算处设置相机的矫正角度,后边需要设置.以后就参照这个办法设置相机的角度问题
         cwRotationFromDisplayToCamera =
                 (360 + cwRotationFromNaturalToCamera - cwRotationFromNaturalToDisplay) % 360;
         Log.i(TAG, "Final display orientation: " + cwRotationFromDisplayToCamera);
 
+        /*-----------------todo:以上是预览的角度问题------------以下是预览的尺寸问题--------------*/
         if (camera.getFacing() == CameraFacing.FRONT) {
             Log.i(TAG, "Compensating rotation for front camera");
             cwNeededRotation = (360 - cwRotationFromDisplayToCamera) % 360;
@@ -125,6 +130,7 @@ final class CameraConfigurationManager {
         Log.i(TAG, "Clockwise rotation from display to camera: " + cwNeededRotation);
 
 
+// TODO: 2019/5/23  非全屏的的预览情况下需要写上实际的尺寸.
         Point theScreenResolution = new Point();
         display.getSize(theScreenResolution);
 
@@ -134,11 +140,11 @@ final class CameraConfigurationManager {
         cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);
         Log.i(TAG, "Camera resolution: " + cameraResolution);
 
-        /*-------最佳的预览尺寸----------*/
+        /*-------todo:最佳的预览尺寸,参数zxing-->android core中的算法,拿出来之后看屏幕的方向再设置----------*/
         bestPreviewSize = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);
         Log.i(TAG, "Best available preview size: " + bestPreviewSize);
 
-        boolean isScreenPortrait = screenResolution.x < screenResolution.y;
+        boolean isScreenPortrait = screenResolution.x < screenResolution.y;//竖屏
         boolean isPreviewSizePortrait = bestPreviewSize.x < bestPreviewSize.y;
 
         if (isScreenPortrait == isPreviewSizePortrait) {
@@ -206,6 +212,7 @@ final class CameraConfigurationManager {
 
         }
 
+        // TODO: 2019/5/22 方向和合理的预览尺寸是重点需要关注的东西
         //设置预览的最佳尺寸,应该是在预览之前,若是已经开始预览则需要停止预览再改变尺寸.
         parameters.setPreviewSize(bestPreviewSize.x, bestPreviewSize.y);
 
@@ -215,6 +222,9 @@ final class CameraConfigurationManager {
         //设置相机的预览角度.
         theCamera.setDisplayOrientation(cwRotationFromDisplayToCamera);
 
+
+
+        /*----------------------------------修正后的参数-------------------------------------*/
         Camera.Parameters afterParameters = theCamera.getParameters();
         Camera.Size afterSize = afterParameters.getPreviewSize();
 

@@ -266,6 +266,25 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
     }
 
+    @Override
+    protected void onPause() {
+        if (handler != null) {
+            handler.quitSynchronously();
+            handler = null;
+        }
+        inactivityTimer.onPause();
+        ambientLightManager.stop();
+        beepManager.close();
+        cameraManager.closeDriver();
+        //historyManager = null; // Keep for onActivityResult
+        if (!hasSurface) {
+            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.removeCallback(this);
+        }
+        super.onPause();
+    }
+
     /*-------------------------surfaceHolder.addCallback(this)----------------------*/
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -327,25 +346,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             }
         }
         return false;
-    }
-
-    @Override
-    protected void onPause() {
-        if (handler != null) {
-            handler.quitSynchronously();
-            handler = null;
-        }
-        inactivityTimer.onPause();
-        ambientLightManager.stop();
-        beepManager.close();
-        cameraManager.closeDriver();
-        //historyManager = null; // Keep for onActivityResult
-        if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
-            SurfaceHolder surfaceHolder = surfaceView.getHolder();
-            surfaceHolder.removeCallback(this);
-        }
-        super.onPause();
     }
 
     @Override

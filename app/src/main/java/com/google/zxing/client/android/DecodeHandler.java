@@ -18,10 +18,6 @@ package com.google.zxing.client.android;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -93,21 +89,21 @@ final class DecodeHandler extends Handler {
 
         /*--------------------------------------------------------------------*/
 //        拿到每一帧的图片进行保存的逻辑
-        byte[] rawImage;
-        Camera.Size previewSize = mCamera.getCamera().getParameters().getPreviewSize();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
-        baos = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 100, baos);
-        rawImage = baos.toByteArray();
-        Bitmap bitmap1 = arrayByteConvertoBitmap(rawImage, null);
-        if (bitmap1 != null) {
-//            保存扫描得来的图片.
+//        byte[] rawImage;
+//        Camera.Size previewSize = mCamera.getCamera().getParameters().getPreviewSize();
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
+//        baos = new ByteArrayOutputStream();
+//        yuvImage.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 100, baos);
+//        rawImage = baos.toByteArray();
+//        Bitmap bitmap1 = arrayByteConvertoBitmap(rawImage, null);
+//        if (bitmap1 != null) {
+////            保存扫描得来的图片.
 //            saveBitmap(bitmap1);
-        } else {
-            Log.i(TAG, "decode: bitmap is null");
-        }
+//        } else {
+//            Log.i(TAG, "decode: bitmap is null");
+//        }
         /*--------------------------------------------------------------------*/
 
 
