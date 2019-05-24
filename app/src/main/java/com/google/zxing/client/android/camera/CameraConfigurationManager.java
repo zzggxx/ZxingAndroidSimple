@@ -91,13 +91,18 @@ final class CameraConfigurationManager {
         }
         Log.i(TAG, "Display at: " + cwRotationFromNaturalToDisplay);
 
-        int cwRotationFromNaturalToCamera = camera.getOrientation();//摄像机(传感器)的方向
+        //摄像机(传感器)的方向,测试得到后置是90度,前置是270度.
+        int cwRotationFromNaturalToCamera = camera.getOrientation();
         Log.i(TAG, "Camera at: " + cwRotationFromNaturalToCamera);
 
         // Still not 100% sure about this. But acts like we need to flip this:
+        // 对此仍不能百分之百肯定。但好像我们需要翻转这个
         if (camera.getFacing() == CameraFacing.FRONT) {
+
+//            前置摄像头镜像了,90 <----> 270
             cwRotationFromNaturalToCamera = (360 - cwRotationFromNaturalToCamera) % 360;
-            Log.i(TAG, "Front camera overriden to: " + cwRotationFromNaturalToCamera);
+
+            Log.i(TAG, "Front camera overriden to: " + cwRotationFromNaturalToCamera);//overriden 翻转
         }
 
 
@@ -115,7 +120,9 @@ final class CameraConfigurationManager {
     }
      */
 
-//    计算处设置相机的矫正角度,后边需要设置.以后就参照这个办法设置相机的角度问题
+//    计算设置相机的渲染需要旋转的角度,后边需要设置.以后就参照这个办法设置相机的角度问题
+//        相机传感器角度 - 屏幕的方向
+
         cwRotationFromDisplayToCamera =
                 (360 + cwRotationFromNaturalToCamera - cwRotationFromNaturalToDisplay) % 360;
         Log.i(TAG, "Final display orientation: " + cwRotationFromDisplayToCamera);
